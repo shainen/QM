@@ -1,0 +1,25 @@
+#!/bin/sh
+#PBS -j oe
+#PBS -l mem=70000mb
+#PBS -V
+#PBS -m ea
+#PBS -M shainen@gmail.com
+
+RUN_NAME=160201_1_QMdiag
+SCRATCH_DIR=/data/$USER/$RUN_NAME
+LOCAL_DIR=/home/shainen/wspin/build
+
+mkdir -p $SCRATCH_DIR
+
+# Copy them from this directory to data director
+cd $LOCAL_DIR/$RUN_NAME
+cp -r QM $SCRATCH_DIR/
+
+# Move to the data directory
+cd $SCRATCH_DIR/
+
+# Run the script
+time math -script QM/runQM.wl
+
+# Remove the now-useless files
+rm -r QM
