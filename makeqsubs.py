@@ -14,7 +14,7 @@ qsubfile = Template("""
 #PBS -M shainen@gmail.com
 
 RUN_NAME=${rname}
-SCRATCH_DIR=/data/$$USER/$$RUN_NAME/r$$PBS_ARRAYID
+SCRATCH_DIR=/data/$$USER/$$RUN_NAME
 LOCAL_DIR=/home/shainen/wspin/build
 
 mkdir -p $$SCRATCH_DIR

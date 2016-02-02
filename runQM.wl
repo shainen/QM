@@ -3,17 +3,20 @@
 SetDirectory[Directory[]<>"/QM"];
 
 
-<<makeStates.wl
+(*SetDirectory[NotebookDirectory[]]*)
 
 
-tmax=50;
-steps=500;
+tmax=0.1;
+steps=2;
 times=Range[0,tmax,tmax/(steps-1)];
 
 
 length1=3;
 length2=3;
 startnumferms=5;
+
+
+<<makeStates.wl
 
 
 thestates=makeStates[length1,length2,startnumferms];
@@ -34,13 +37,31 @@ fermikinham=SparseArray[{ii_,ii_}:>Total[fermenergy (thestates[[ii,2]]+thestates
 Get["151008_1_mkham3b3s5.dat"];
 
 
-hamndintfull=hamInt3b3s5
+hamndintfull=hamInt3b3s5;
 
 
 hamTot=-bosonchempot+fermikinham+hamndintfull/Sqrt[length1 length2];
 
 
-diag=Eigensystem[N[hamTot]];
+init=SparseArray[Position[thestates,{({
+ {0, 0, 0},
+ {0, 0, 0},
+ {0, 0, 0}
+}),({
+ {1, 1, 1},
+ {1, 0, 0},
+ {1, 0, 0}
+}),({
+ {1, 1, 1},
+ {1, 0, 0},
+ {1, 0, 0}
+})}][[1,1]]->1,{dim}];
+
+
+ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==I hamTot.psi[t]},psi,{t,0,tmax}]/@times;
+
+
+momNumsQM=Transpose[Abs[ket]^2.thestates,{4,1,2,3}];
 
 
 mmu=MaxMemoryUsed[]/10.^6
@@ -49,4 +70,7 @@ mmu=MaxMemoryUsed[]/10.^6
 SetDirectory[ParentDirectory[]];
 
 
-Save["diag3x3s5.dat",{mmu,diag}];
+Save["fullKet.dat",{mmu,ket}];
+
+
+Save["momNumsQM.dat",{mmu,momNumsQM}];
