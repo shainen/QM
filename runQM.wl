@@ -58,7 +58,7 @@ init=SparseArray[Position[thestates,{({
 })}][[1,1]]->1,{dim}];
 
 
-ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==I hamTot.psi[t]},psi,{t,0,tmax}]/@times;
+ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I hamTot.psi[t]},psi,{t,0,tmax}]/@times;
 
 
 momNumsQM=Transpose[Abs[ket]^2.thestates,{4,1,2,3}];
