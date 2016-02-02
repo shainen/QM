@@ -61,7 +61,7 @@ init=SparseArray[Position[thestates,{({
 ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I hamTot.psi[t]},psi,{t,0,tmax}]/@times;
 
 
-momNumsQM=Transpose[Abs[ket]^2.thestates,{4,1,2,3}];
+momNumsQM=Transpose[(Abs[ket]^2).thestates,{4,1,2,3}];
 
 
 mmu=MaxMemoryUsed[]/10.^6
