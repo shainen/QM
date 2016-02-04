@@ -16,6 +16,18 @@ length2=3;
 startnumferms=5;
 
 
+tscale=10;
+
+
+finMu=10;
+
+
+chemPot[t_]:=-finMu(1-2E^(-t^2/tscale^2))
+
+
+coup[t_]:=(1-E^(-t^2/tscale^2))
+
+
 <<makeStates.wl
 
 
@@ -40,7 +52,7 @@ Get["151008_1_mkham3b3s5.dat"];
 hamndintfull=hamInt3b3s5;
 
 
-hamTot=-bosonchempot+fermikinham+hamndintfull/Sqrt[length1 length2];
+hamTot[t_]:=chemPot[t]bosonchempot+fermikinham+coup[t]hamndintfull/Sqrt[length1 length2];
 
 
 init=SparseArray[Position[thestates,{({
@@ -58,7 +70,7 @@ init=SparseArray[Position[thestates,{({
 })}][[1,1]]->1,{dim}];
 
 
-ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I hamTot.psi[t]},psi,{t,0,tmax}]/@times;
+ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I hamTot[t].psi[t]},psi,{t,0,tmax}]/@times;
 
 
 momNumsQM=Transpose[(Abs[ket]^2).thestates,{4,1,2,3}];
