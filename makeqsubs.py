@@ -8,7 +8,7 @@ runname=getcwd().split('/')[-2]
 qsubfile = Template("""
 #!/bin/sh
 #PBS -j oe
-#PBS -l mem=4000mb
+#PBS -l mem=20000mb
 #PBS -V
 #PBS -m ea
 #PBS -M shainen@gmail.com

@@ -25,7 +25,13 @@ finMu=10;
 chemPot[t_]:=-finMu(1-2E^(-t^2/tscale^2))
 
 
+(*chemPot[t_]:=Piecewise[{{finMu Cos[2 \[Pi] t/tmax],t<2 tscale},{-finMu,t\[GreaterEqual]2 tscale}}]*)
+
+
 coup[t_]:=(1-E^(-t^2/tscale^2))
+
+
+(*coup[t_]:=Piecewise[{{(1-Cos[2 \[Pi] t/tmax])/2,t<2 tscale},{1,t\[GreaterEqual]2 tscale}}]*)
 
 
 <<makeStates.wl
