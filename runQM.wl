@@ -1,15 +1,15 @@
 (* ::Package:: *)
 
-SetDirectory[Directory[]<>"/QM"];
+(*SetDirectory[Directory[]<>"/QM"];*)
 
 
-(*SetDirectory[NotebookDirectory[]]*)
+SetDirectory[NotebookDirectory[]]
 
 
-tscale=10;
+tscale=.2;
 
 
-tmax=4 tscale;
+tmax=1;
 steps=500;
 times=Range[0,tmax,tmax/(steps-1)];
 
@@ -19,10 +19,10 @@ length2=3;
 startnumferms=5;
 
 
-finMu=10;
+(*finMu=10;*)
 
 
-chemPot[t_]:=-finMu(1-2E^(-t^2/tscale^2))
+(*chemPot[t_]:=-finMu(1-2E^(-t^2/tscale^2))*)
 
 
 (*chemPot[t_]:=Piecewise[{{finMu Cos[2 \[Pi] t/tmax],t<2 tscale},{-finMu,t\[GreaterEqual]2 tscale}}]*)
@@ -31,7 +31,7 @@ chemPot[t_]:=-finMu(1-2E^(-t^2/tscale^2))
 coup[t_]:=(1-E^(-t^2/tscale^2))
 
 
-(*coup[t_]:=Piecewise[{{(1-Cos[2 \[Pi] t/tmax])/2,t<2 tscale},{1,t\[GreaterEqual]2 tscale}}]*)
+(*coup[t_]:=Piecewise[{{(1-Cos[\[Pi] t/tscale/2])/2,t<2 tscale},{1,t\[GreaterEqual]2 tscale}}]*)
 
 
 <<makeStates.wl
@@ -58,7 +58,19 @@ Get["151008_1_mkham3b3s5.dat"];
 hamndintfull=hamInt3b3s5;
 
 
-hamTot[t_]:=chemPot[t]bosonchempot+fermikinham+coup[t]hamndintfull/Sqrt[length1 length2];
+(*hamTot[t_]:=chemPot[t]bosonchempot+fermikinham+coup[t]hamndintfull/Sqrt[length1 length2];*)
+
+
+constHam=-10 bosonchempot+fermikinham;
+
+
+changeHam=20 hamndintfull/Sqrt[length1 length2];
+
+
+(*hamTotF[t_]:=-10 bosonchempot+fermikinham+20 coup[t] hamndintfull/Sqrt[length1 length2];*)
+
+
+hamTot=constHam+changeHam;
 
 
 init=SparseArray[Position[thestates,{({
@@ -76,10 +88,13 @@ init=SparseArray[Position[thestates,{({
 })}][[1,1]]->1,{dim}];
 
 
-ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I hamTot[t].psi[t]},psi,{t,0,tmax}]/@times;
+Timing[ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I (constHam.psi[t]+coup[t](changeHam.psi[t]))},psi,{t,0,tmax}]/@times;]
 
 
 momNumsQM=Transpose[(Abs[ket]^2).thestates,{4,1,2,3}];
+
+
+intObs=(#\[Conjugate].hamndintfull.#&/@ket)/Sqrt[length1 length2];
 
 
 mmu=MaxMemoryUsed[]/10.^6;
@@ -88,7 +103,7 @@ mmu=MaxMemoryUsed[]/10.^6;
 SetDirectory[ParentDirectory[]];
 
 
-Save["fullKet.dat",{mmu,ket}];
+(*Save["fullKet.dat",{mmu,ket}];*)
 
 
-Save["momNumsQM.dat",{mmu,momNumsQM}];
+(*Save["momNumsQM.dat",{mmu,momNumsQM,intObs}];*)
