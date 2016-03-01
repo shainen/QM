@@ -6,10 +6,10 @@ SetDirectory[Directory[]<>"/QM"];
 (*SetDirectory[NotebookDirectory[]]*)
 
 
-tscale=10;
+tscale=40;
 
 
-tmax=40;
+tmax=160;
 steps=500;
 times=Range[0,tmax,tmax/(steps-1)];
 

@@ -34,6 +34,6 @@ rm -r ${prj}
 """)
 
 
-with open("../"+runname+".qsub", "w") as f:
-    f.write(qsubfile.substitute(rname=runname,prj=project))
+f=open("../"+runname+".qsub", "w")
+f.write(qsubfile.substitute(rname=runname,prj=project))
 
