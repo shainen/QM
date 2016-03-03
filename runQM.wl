@@ -9,9 +9,13 @@ SetDirectory[Directory[]<>"/QM"];
 tscale=40;
 
 
-tmax=160;
+tmax=0.01;
 steps=500;
 times=Range[0,tmax,tmax/(steps-1)];
+
+
+numChunks=5;
+chunks=Partition[times,steps/numChunks];
 
 
 length1=3;
@@ -88,7 +92,27 @@ init=SparseArray[Position[thestates,{({
 })}][[1,1]]->1,{dim}];
 
 
-Timing[ket=NDSolveValue[{psi[0]==Normal[init],psi'[t]==-I (chemPot[t](bosonchempot.psi[t])+fermikinham.psi[t]+coup[t](changeHam.psi[t]))},psi,{t,0,tmax}]/@times;]
+start=First@NDSolve`ProcessEquations[{psi'[t] == -I (chemPot[t] (bosonchempot.psi[t]) + fermikinham.psi[t] + coup[t] (changeHam.psi[t])),psi[0] == Normal[init]},psi,t];
+
+
+moveforward=Function[{newStart,timeChunk},
+timeStart=First@timeChunk-tmax/(steps-1);
+timeEnd=Last@timeChunk;
+Block[{newstate=First@NDSolve`Reinitialize[start,psi[timeStart]==newStart]},
+NDSolve`Iterate[newstate,timeEnd];
+NDSolve`ProcessSolutions[newstate][[1,2]]/@timeChunk
+]
+];
+
+
+ket={Normal[init]};
+ket=Join[ket,moveforward[Last@ket,Drop[First@chunks,1]]];
+Do[
+ket=Join[ket,moveforward[Last@ket,ii]];
+,{ii,Drop[chunks,1]}];
+
+
+(*ket = NDSolveValue[{psi[0] == Normal[init], psi'[t] == -I (chemPot[t] (bosonchempot.psi[t]) + fermikinham.psi[t] + coup[t] (changeHam.psi[t]))}, psi, {t, 0, tmax}] /@ times;*)
 
 
 momNumsQM=Transpose[(Abs[ket]^2).thestates,{4,1,2,3}];
